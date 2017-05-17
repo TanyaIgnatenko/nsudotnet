@@ -4,7 +4,7 @@ namespace Ignatenko.Nsudotnet.Enigma
 {
     class Program
     {
-        static void showInputFormat()
+        static void ShowInputFormat()
         {
             Console.WriteLine("Invalid input.");
             Console.WriteLine("Usage:\nEnigma.exe encrypt <file_name> <algorithm_name> <output_file_name.bin>\n" +
@@ -16,14 +16,14 @@ namespace Ignatenko.Nsudotnet.Enigma
         {
             if (args.Length < 5)
             {
-                showInputFormat();
+                ShowInputFormat();
                 return;
             }
             if (args[1] == "encrypt")
             {
                 if (args.Length != 5)
                 {
-                    showInputFormat();
+                    ShowInputFormat();
                     return;
                 }
                 Encriptor.EncryptFile(args[2], args[4], args[3]);
@@ -32,14 +32,14 @@ namespace Ignatenko.Nsudotnet.Enigma
             {
                 if (args.Length != 6)
                 {
-                    showInputFormat();
+                    ShowInputFormat();
                     return;
                 }
                 Decryptor.DecryptFile(args[2], args[5], args[4], args[3]);
             }
             else
             {
-                showInputFormat();
+                ShowInputFormat();
             }
         }
     }
