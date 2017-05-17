@@ -29,18 +29,26 @@ namespace Ignatenko.Nsudotnet.LinesCounter
                         while ((line = streamReader.ReadLine()) != null)
                         {
                             bool usefulLine = false;
-                            int singleLineCommentStartIdx = line.IndexOf("//");
+                            int roiStartIdx = 0;      // Roi - region of interest
+                            int roiEndIdx = line.Length;
+
+                            int singleLineCommentStartIdx = line.IndexOf("//", roiStartIdx, roiEndIdx - roiStartIdx);
                             if (singleLineCommentStartIdx != -1)
                             {
-                                line = line.Substring(0, singleLineCommentStartIdx);
+                                roiEndIdx = singleLineCommentStartIdx;
                             }
-                            line = line.Trim();
 
-                            while (!String.IsNullOrEmpty(line))
+                            while ((roiEndIdx - roiStartIdx) != 0)
                             {
+                                if (Char.IsWhiteSpace(line[roiStartIdx]))
+                                {
+                                    ++roiStartIdx;
+                                    continue;
+                                }
+
                                 if (!readingMultipleLineComment)
                                 {
-                                    int multipleLineCommentStartIdx = line.IndexOf("/*");
+                                    int multipleLineCommentStartIdx = line.IndexOf("/*", roiStartIdx, roiEndIdx - roiStartIdx);
                                     if (multipleLineCommentStartIdx != 0)
                                     {
                                         usefulLine = true;
@@ -49,7 +57,7 @@ namespace Ignatenko.Nsudotnet.LinesCounter
                                     if (multipleLineCommentStartIdx != -1)
                                     {
                                         readingMultipleLineComment = true;
-                                        line = line.Substring(multipleLineCommentStartIdx + 2);
+                                        roiStartIdx = multipleLineCommentStartIdx + 2;
                                     }
                                     else
                                     {
@@ -58,18 +66,17 @@ namespace Ignatenko.Nsudotnet.LinesCounter
                                 }
                                 else
                                 {
-                                    int multipleLineCommentEndIdx = line.IndexOf("*/");
+                                    int multipleLineCommentEndIdx = line.IndexOf("*/", roiStartIdx, roiEndIdx - roiStartIdx);
                                     if (multipleLineCommentEndIdx != -1)
                                     {
                                         readingMultipleLineComment = false;
-                                        line = line.Substring(multipleLineCommentEndIdx + 2);
+                                        roiStartIdx = multipleLineCommentEndIdx + 2;
                                     }
                                     else
                                     {
                                         break;
                                     }
                                 }
-                                line = line.Trim();
                             }
 
                             if (usefulLine)
